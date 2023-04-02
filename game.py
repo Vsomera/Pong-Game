@@ -20,5 +20,5 @@ while True:
             sys.exit()
 
     # updates window
-    pygame.display.flip()
+    pygame.display.flip() 
     clock.tick(60) # limits how fast the loop runs (60fps)
