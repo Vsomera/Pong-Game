@@ -39,9 +39,10 @@ ball_speed_y = 7
 player_speed = 0
 opponent_speed = 7
 
+# Ball animations
 def ball_animation():
+    # Set speed of ball as global variables (to be used in while loop)
     global ball_speed_x, ball_speed_y
-    # Animations
     ball.x += ball_speed_x
     ball.y += ball_speed_y
 
@@ -55,28 +56,42 @@ def ball_animation():
     if ball.colliderect(player) or ball.colliderect(opponent):
         ball_speed_x *= -1
 
+# Player paddle animations
 def player_animation():
+    # Moves player paddle 
     player.y += player_speed
+
+    # Ensures player paddle doesn't leave the frame
     if player.top <= 0:
         player.top = 0
     if player.bottom >= screen_height:
         player.bottom = screen_height
 
+# Opponent paddle animation
 def opponent_animation():
+    # Moves player paddle based on ball position
     if opponent.top < ball.y:
         opponent.top += opponent_speed
     if opponent.bottom > ball.y:
         opponent.bottom -= opponent_speed
+
+    # Ensures opponent paddle doesn't leave the frame
     if opponent.top <= 0:
         opponent.top = 0
     if opponent.bottom >= screen_height:
         opponent.bottom = screen_height
 
+# Resets ball every time the ball hits frame
 def ball_restart():
     global ball_speed_x, ball_speed_y
+
+    # Centers ball
     ball.center = (screen_width/2, screen_height/2)
+
+    # Sends ball to move in random direction
     ball_speed_y *= random.choice((1, -1))
     ball_speed_x *= random.choice((1, -1))
+
 while True:
     # Handles all user inputs
     for event in pygame.event.get():
@@ -84,12 +99,17 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        # Detects when a key is pushed down
         if event.type == pygame.KEYDOWN:
+            # Move player paddle down if the down arrow is pressed
             if event.key == pygame.K_DOWN:
                 player_speed +=7
+            # Move player paddle up if the up arrow is pressed
             if event.key == pygame.K_UP:
                 player_speed -=7
+        # Detects when a key is released
         if event.type == pygame.KEYUP:
+            # Stops movement of paddle
             if event.key == pygame.K_DOWN:
                 player_speed -=7
             if event.key == pygame.K_UP:
