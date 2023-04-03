@@ -45,7 +45,7 @@ while True:
             sys.exit()
 
 
-    # Animations
+    # Animations for ball
     ball.x += ball_speed_x
     ball.y += ball_speed_y
 
@@ -54,9 +54,12 @@ while True:
         ball_speed_y *= -1
     if ball.left <= 0 or ball.right >= screen_width:
         ball_speed_x *= -1
+    
+    # Ball collisions on rectangles
+    if ball.collidedict(player) or ball.collidedict(opponent):
+        ball_speed_x *= -1
 
     # Visuals -> Colors in the rectangles and screen
-
     screen.fill(grey) # The entire screen background
     pygame.draw.rect(screen, light_grey, player) # player
     pygame.draw.rect(screen, light_grey, opponent) # opponent
