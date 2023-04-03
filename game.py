@@ -45,7 +45,7 @@ while True:
             sys.exit()
 
 
-    # Animations for ball
+    # Animations
     ball.x += ball_speed_x
     ball.y += ball_speed_y
 
@@ -56,7 +56,7 @@ while True:
         ball_speed_x *= -1
     
     # Ball collisions on rectangles
-    if ball.collidedict(player) or ball.collidedict(opponent):
+    if ball.colliderect(player) or ball.colliderect(opponent):
         ball_speed_x *= -1
 
     # Visuals -> Colors in the rectangles and screen
