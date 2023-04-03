@@ -11,6 +11,29 @@ screen_height = 960
 screen = pygame.display.set_mode((screen_width, screen_height)) # returns display surface object
 pygame.display.set_caption('Pong')      # gives window a title
 
+### Game Rectangles ###
+
+# Creates a ball in the center 30px wide and 30 px high
+ball = pygame.Rect(screen_width/2 - 15 ,
+                   screen_height/2 - 15 ,
+                   30, 30) 
+
+# Creates a player in the center right 10px wide and 140 px high
+player = pygame.Rect(screen_width - 20, 
+                     screen_height/2 - 70, 
+                     10, 140)
+
+# Creates an opponent in the center left 10px wide and 140 px high
+opponent = pygame.Rect(10, screen_height/2 - 70, 
+                       10, 140)
+
+
+### Establishes Global Colors ###
+grey = pygame.Color('grey12')
+light_grey = (200, 200, 200)
+
+
+
 while True:
     # Handles all user inputs
     for event in pygame.event.get():
@@ -18,6 +41,17 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+    # Visuals -> Colors in the rectangles and screen
+
+    screen.fill(grey) # The entire screen background
+    pygame.draw.rect(screen, light_grey, player) # player
+    pygame.draw.rect(screen, light_grey, opponent) # opponent
+    pygame.draw.ellipse(screen, light_grey, ball) # ball (circle)
+
+    pygame.draw.aaline(screen, light_grey, 
+                       # x coord      y coord            
+                       (screen_width/2, 0), (screen_width/2, screen_height)) # draws the center line for the game
 
     # updates window    
     pygame.display.flip()
