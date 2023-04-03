@@ -32,7 +32,9 @@ opponent = pygame.Rect(10, screen_height/2 - 70,
 grey = pygame.Color('grey12')
 light_grey = (200, 200, 200)
 
-
+### Establishes the speed of the ball ###
+ball_speed_x = 5
+ball_speed_y = 5
 
 while True:
     # Handles all user inputs
@@ -41,6 +43,17 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+
+    # Animations
+    ball.x += ball_speed_x
+    ball.y += ball_speed_y
+
+    # Ball play area (ensures the ball doesn't go out of the display)
+    if ball.top <= 0 or ball.bottom >= screen_height:
+        ball_speed_y *= -1
+    if ball.left <= 0 or ball.right >= screen_width:
+        ball_speed_x *= -1
 
     # Visuals -> Colors in the rectangles and screen
 
