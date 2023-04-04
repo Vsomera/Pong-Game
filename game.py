@@ -10,15 +10,29 @@ clock = pygame.time.Clock()
 # Main Window Setup
 screen_width = 1200
 screen_height = 960
+
 # returns display surface object
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Pong')      # gives window a title
-
 
 ### Establishes Global Colors ###
 grey = pygame.Color('grey12')
 light_grey = (200, 200, 200)
 
+# Points class
+class Points:
+    # Keeps track of points for opponent and player
+    player_points = 0
+    opponent_points = 0
+
+    def add_player_point(self):
+        # Adds 1 point to player when called
+        Points.player_points += 1
+
+    def add_opponent_point(self):
+        # Adds 1 point to opponent when called
+        Points.opponent_points += 1
+    
 # Animations class
 class Animations:
     def __init__(self, screen_width, screen_height):
@@ -48,7 +62,16 @@ class Animations:
         # Ball play area (ensures the ball doesn't go out of the display)
         if self.ball.top <= 0 or self.ball.bottom >= screen_height:
             self.ball_speed_y *= -1
-        if self.ball.left <= 0 or self.ball.right >= screen_width:
+
+        # Adds points to points class and resets ball
+        if self.ball.left <= 0:
+            # adds one point to player
+            Points.add_player_point(self)
+            self.ball_restart()
+        
+        if self.ball.right >= screen_width:
+            # adds one point to opponent
+            Points.add_opponent_point(self)
             self.ball_restart()
 
         # Ball collisions on rectangles
@@ -122,9 +145,32 @@ class Game:
             self.Animations.ball_animation()
             self.Animations.player_animation()
             self.Animations.opponent_animation()
+            
+            # Retrieves points from Points class
+            player = Points.player_points
+            opponent = Points.opponent_points
+
+            ### Displays points for game ###
+            # Font for text
+            font = pygame.font.Font('freesansbold.ttf', 32) 
+
+            # Text that is displayed
+            text = font.render(f'{opponent}       {player}', 
+                               True, light_grey, grey) # colors in the text
+
+           # creates surface object for text
+            textRect = text.get_rect()
+
+            # centers the text on display
+            textRect.center = (screen_width // 2, 
+                               screen_height // 2)
+
 
             # Visuals -> Colors in the rectangles and screen
             screen.fill(grey)  # The entire screen background
+
+            screen.blit(text, textRect) # Displays points for each player
+
             pygame.draw.rect(screen, light_grey,
                             self.Animations.player)  # player
             pygame.draw.rect(screen, light_grey,
