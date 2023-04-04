@@ -1,4 +1,6 @@
-import pygame, sys, random
+import pygame
+import sys
+import random
 
 # initiate pygame
 pygame.init()
@@ -8,127 +10,137 @@ clock = pygame.time.Clock()
 # Main Window Setup
 screen_width = 1200
 screen_height = 960
-screen = pygame.display.set_mode((screen_width, screen_height)) # returns display surface object
+# returns display surface object
+screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Pong')      # gives window a title
-
-### Game Rectangles ###
-
-# Creates a ball in the center 30px wide and 30 px high
-ball = pygame.Rect(screen_width/2 - 15 ,
-                   screen_height/2 - 15 ,
-                   30, 30) 
-
-# Creates a player in the center right 10px wide and 140 px high
-player = pygame.Rect(screen_width - 20, 
-                     screen_height/2 - 70, 
-                     10, 140)
-
-# Creates an opponent in the center left 10px wide and 140 px high
-opponent = pygame.Rect(10, screen_height/2 - 70, 
-                       10, 140)
 
 
 ### Establishes Global Colors ###
 grey = pygame.Color('grey12')
 light_grey = (200, 200, 200)
 
-### Establishes the speed of the ball ###
-ball_speed_x = 7 * random.choice((1, -1))
-ball_speed_y = 7 * random.choice((1, -1))
-ball_speed_y = 7
-player_speed = 0
-opponent_speed = 7
+# Animations class
+class Animations:
+    def __init__(self, screen_width, screen_height):
+        # Creates ball, player and opponent rectangles
+        self.ball = pygame.Rect(screen_width/2 - 15,
+                                screen_height/2 - 15,
+                                30, 30)
+        self.player = pygame.Rect(screen_width - 20,
+                                screen_height/2 - 70,
+                                10, 140)
+        self.opponent = pygame.Rect(10, screen_height/2 - 70,
+                                    10, 140)
 
-# Ball animations
-def ball_animation():
-    # Set speed of ball as global variables (to be used in while loop)
-    global ball_speed_x, ball_speed_y
-    ball.x += ball_speed_x
-    ball.y += ball_speed_y
+        # Sets default speed for ball, player and opponent
+        self.ball_speed_x = 7 * random.choice((1, -1))
+        self.ball_speed_y = 7 * random.choice((1, -1))
+        self.ball_speed_y = 7
+        self.player_speed = 0
+        self.opponent_speed = 7
 
-    # Ball play area (ensures the ball doesn't go out of the display)
-    if ball.top <= 0 or ball.bottom >= screen_height:
-        ball_speed_y *= -1
-    if ball.left <= 0 or ball.right >= screen_width:
-        ball_restart()
-    
-    # Ball collisions on rectangles
-    if ball.colliderect(player) or ball.colliderect(opponent):
-        ball_speed_x *= -1
+    # Ball animation
+    def ball_animation(self):
+        # Set speed of ball (to be used in while loop)
+        self.ball.x += self.ball_speed_x
+        self.ball.y += self.ball_speed_y
 
-# Player paddle animations
-def player_animation():
-    # Moves player paddle 
-    player.y += player_speed
+        # Ball play area (ensures the ball doesn't go out of the display)
+        if self.ball.top <= 0 or self.ball.bottom >= screen_height:
+            self.ball_speed_y *= -1
+        if self.ball.left <= 0 or self.ball.right >= screen_width:
+            self.ball_restart()
 
-    # Ensures player paddle doesn't leave the frame
-    if player.top <= 0:
-        player.top = 0
-    if player.bottom >= screen_height:
-        player.bottom = screen_height
+        # Ball collisions on rectangles
+        if self.ball.colliderect(self.player) or self.ball.colliderect(self.opponent):
+            self.ball_speed_x *= -1
 
-# Opponent paddle animation
-def opponent_animation():
-    # Moves player paddle based on ball position
-    if opponent.top < ball.y:
-        opponent.top += opponent_speed
-    if opponent.bottom > ball.y:
-        opponent.bottom -= opponent_speed
+    # Player paddle animations
+    def player_animation(self):
+        # Moves player paddle
+        self.player.y += self.player_speed
 
-    # Ensures opponent paddle doesn't leave the frame
-    if opponent.top <= 0:
-        opponent.top = 0
-    if opponent.bottom >= screen_height:
-        opponent.bottom = screen_height
+        # Ensures player paddle doesn't leave the frame
+        if self.player.top <= 0:
+            self.player.top = 0
+        if self.player.bottom >= screen_height:
+            self.player.bottom = screen_height
 
-# Resets ball every time the ball hits frame
-def ball_restart():
-    global ball_speed_x, ball_speed_y
+    # Opponent paddle animation
+    def opponent_animation(self):
+        # Moves player paddle based on ball position
+        if self.opponent.top < self.ball.y:
+            self.opponent.top += self.opponent_speed
+        if self.opponent.bottom > self.ball.y:
+            self.opponent.bottom -= self.opponent_speed
 
-    # Centers ball
-    ball.center = (screen_width/2, screen_height/2)
+        # Ensures opponent paddle doesn't leave the frame
+        if self.opponent.top <= 0:
+            self.opponent.top = 0
+        if self.opponent.bottom >= screen_height:
+            self.opponent.bottom = screen_height
 
-    # Sends ball to move in random direction
-    ball_speed_y *= random.choice((1, -1))
-    ball_speed_x *= random.choice((1, -1))
+    # Resets ball every time the ball hits frame
+    def ball_restart(self):
+        # Centers ball
+        self.ball.center = (screen_width/2, screen_height/2)
 
-while True:
-    # Handles all user inputs
-    for event in pygame.event.get():
-        # Closes game upon user input (clicks X on top of screen)
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        # Detects when a key is pushed down
-        if event.type == pygame.KEYDOWN:
-            # Move player paddle down if the down arrow is pressed
-            if event.key == pygame.K_DOWN:
-                player_speed +=7
-            # Move player paddle up if the up arrow is pressed
-            if event.key == pygame.K_UP:
-                player_speed -=7
-        # Detects when a key is released
-        if event.type == pygame.KEYUP:
-            # Stops movement of paddle
-            if event.key == pygame.K_DOWN:
-                player_speed -=7
-            if event.key == pygame.K_UP:
-                player_speed += 7
+        # Sends ball to move in random direction
+        self.ball_speed_y *= random.choice((1, -1))
+        self.ball_speed_x *= random.choice((1, -1))
 
-    ball_animation()
-    player_animation()
-    opponent_animation()
+# Starts game
+class Game:
+    def __init__(self, Animations, screen_width, screen_height):
+        # Declares Animations class and resets ball position
+        self.Animations = Animations(screen_width, screen_height)
+        self.Animations.ball_restart()
 
-    # Visuals -> Colors in the rectangles and screen
-    screen.fill(grey) # The entire screen background
-    pygame.draw.rect(screen, light_grey, player) # player
-    pygame.draw.rect(screen, light_grey, opponent) # opponent
-    pygame.draw.ellipse(screen, light_grey, ball) # ball (circle)
+    def run(self):
+        while True:
+            # Handles all user inputs
+            for event in pygame.event.get():
+                # Closes game upon user input (clicks X on top of screen)
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                # Detects when a key is pushed down
+                if event.type == pygame.KEYDOWN:
+                    # Move player paddle down if the down arrow is pressed
+                    if event.key == pygame.K_DOWN:
+                        self.Animations.player_speed += 7
+                    # Move player paddle up if the up arrow is pressed
+                    if event.key == pygame.K_UP:
+                        self.Animations.player_speed -= 7
+                # Detects when
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_DOWN:
+                        self.Animations.player_speed -= 7
+                    if event.key == pygame.K_UP:
+                        self.Animations.player_speed += 7
 
-    pygame.draw.aaline(screen, light_grey, 
-                       # x coord      y coord            
-                       (screen_width/2, 0), (screen_width/2, screen_height)) # draws the center line for the game
+            self.Animations.ball_animation()
+            self.Animations.player_animation()
+            self.Animations.opponent_animation()
 
-    # updates window    
-    pygame.display.flip()
-    clock.tick(60) # limits on how fast the loop runs (60fps)
+            # Visuals -> Colors in the rectangles and screen
+            screen.fill(grey)  # The entire screen background
+            pygame.draw.rect(screen, light_grey,
+                            self.Animations.player)  # player
+            pygame.draw.rect(screen, light_grey,
+                            self.Animations.opponent)  # opponent
+            pygame.draw.ellipse(screen, light_grey,
+                                self.Animations.ball)  # ball (circle)
+
+            pygame.draw.aaline(screen, light_grey,
+                               # x coord      y coord
+                               (screen_width/2, 0), (screen_width/2, screen_height))  # draws the center line for the game
+
+            # updates window
+            pygame.display.flip()
+            clock.tick(60)  # limits on how fast the loop runs (60fps)
+
+
+if __name__ == '__main__':
+    game = Game(Animations, screen_width, screen_height)
+    game.run()
